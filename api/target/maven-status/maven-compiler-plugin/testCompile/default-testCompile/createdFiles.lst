@@ -1,0 +1,4 @@
+org\openmrs\module\cds\api\dto\DashboardStatsDTOTest.class
+org\openmrs\module\cds\api\ClinicalDataSystemServiceExtendedTest.class
+org\openmrs\module\cds\api\dao\ClinicalDataSystemDaoTest.class
+org\openmrs\module\cds\api\ClinicalDataSystemServiceTest.class

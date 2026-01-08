@@ -1,0 +1,8 @@
+org\openmrs\module\cds\fragment\controller\ActionsListFragmentController.class
+org\openmrs\module\cds\fragment\controller\MissedListFragmentController.class
+org\openmrs\module\cds\fragment\controller\IitListFragmentController.class
+org\openmrs\module\cds\fragment\controller\UpcomingListFragmentController.class
+org\openmrs\module\cds\extension\html\AdminList.class
+org\openmrs\module\cds\fragment\controller\CdsFragmentController.class
+org\openmrs\module\cds\fragment\controller\ClientEffortFragmentController.class
+org\openmrs\module\cds\web\controller\ClinicalDataSystemController.class

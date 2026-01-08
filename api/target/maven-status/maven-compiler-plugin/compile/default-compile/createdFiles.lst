@@ -1,0 +1,9 @@
+org\openmrs\module\cds\api\dao\ClinicalDataSystemDao.class
+org\openmrs\module\cds\ClinicalDataSystemConfig.class
+org\openmrs\module\cds\ClinicalDataSystemActivator.class
+org\openmrs\module\cds\Item.class
+org\openmrs\module\cds\api\ClinicalDataSystemService.class
+org\openmrs\module\cds\api\dto\CdsActionRecord.class
+org\openmrs\module\cds\api\impl\ClinicalDataSystemServiceImpl.class
+org\openmrs\module\cds\api\dto\ClientEffortEntry.class
+org\openmrs\module\cds\api\dto\DashboardStats.class

@@ -1,0 +1,302 @@
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public License,
+ * v. 2.0. If a copy of the MPL was not distributed with this file, You can
+ * obtain one at http://mozilla.org/MPL/2.0/. OpenMRS is also distributed under
+ * the terms of the Healthcare Disclaimer located at http://openmrs.org/license.
+ *
+ * Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
+ * graphic logo is a trademark of OpenMRS Inc.
+ */
+package org.openmrs.module.cds.api;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.openmrs.module.cds.api.dao.ClinicalDataSystemDao;
+import org.openmrs.module.cds.api.dto.CdsActionRecord;
+import org.openmrs.module.cds.api.impl.ClinicalDataSystemServiceImpl;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for ClinicalDataSystemService
+ * Tests all business logic and error handling
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class ClinicalDataSystemServiceExtendedTest {
+
+	@Mock
+	private ClinicalDataSystemDao dao;
+
+	@InjectMocks
+	private ClinicalDataSystemServiceImpl service;
+
+	@Before
+	public void setUp() {
+	}
+
+	@Test
+	public void testGetIITPatientIds_Success() {
+		// Arrange
+		List<Integer> expectedIds = createIntegerList(5);
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(expectedIds);
+
+		// Act
+		List<Integer> result = service.getIITPatientIds(90);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(5, result.size());
+		verify(dao, times(1)).getIITPatientIds(any(Date.class), any(Date.class));
+	}
+
+	@Test
+	public void testGetIITPatientIds_EmptyResult() {
+		// Arrange
+		List<Integer> emptyList = new ArrayList<>();
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(emptyList);
+
+		// Act
+		List<Integer> result = service.getIITPatientIds(90);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testGetIITPatientIds_NullResult() {
+		// Arrange
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(null);
+
+		// Act
+		List<Integer> result = service.getIITPatientIds(90);
+
+		// Assert
+		assertNull(result);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testGetIITPatientIds_DAOThrowsException() {
+		// Arrange
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenThrow(new RuntimeException("Database error"));
+
+		// Act
+		service.getIITPatientIds(90);
+	}
+
+	@Test
+	public void testGetMissedAppointmentPatientIds_Success() {
+		// Arrange
+		List<Integer> expectedIds = createIntegerList(12);
+		when(dao.getMissedAppointmentPatientIds(any(Date.class), any(Date.class))).thenReturn(expectedIds);
+
+		// Act
+		List<Integer> result = service.getMissedAppointmentPatientIds(30);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(12, result.size());
+		verify(dao, times(1)).getMissedAppointmentPatientIds(any(Date.class), any(Date.class));
+	}
+
+	@Test
+	public void testGetMissedAppointmentPatientIds_DifferentDays() {
+		// Arrange
+		List<Integer> expectedIds = createIntegerList(10);
+		when(dao.getMissedAppointmentPatientIds(any(Date.class), any(Date.class))).thenReturn(expectedIds);
+
+		// Act
+		List<Integer> result = service.getMissedAppointmentPatientIds(60);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(10, result.size());
+		verify(dao, times(1)).getMissedAppointmentPatientIds(any(Date.class), any(Date.class));
+	}
+
+	@Test
+	public void testGetUpcomingAppointmentPatientIds_Success() {
+		// Arrange
+		List<Integer> expectedIds = createIntegerList(23);
+		when(dao.getUpcomingAppointmentPatientIds(any(Date.class), any(Date.class))).thenReturn(expectedIds);
+
+		// Act
+		List<Integer> result = service.getUpcomingAppointmentPatientIds(30);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(23, result.size());
+		verify(dao, times(1)).getUpcomingAppointmentPatientIds(any(Date.class), any(Date.class));
+	}
+
+	@Test
+	public void testGetUpcomingAppointmentPatientIds_EmptyResult() {
+		// Arrange
+		when(dao.getUpcomingAppointmentPatientIds(any(Date.class), any(Date.class))).thenReturn(new ArrayList<>());
+
+		// Act
+		List<Integer> result = service.getUpcomingAppointmentPatientIds(30);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testGetPendingCdsActions_Success() {
+		// Arrange
+		List<CdsActionRecord> expectedActions = createActionList(5);
+		when(dao.getPendingCdsActions()).thenReturn(expectedActions);
+
+		// Act
+		List<CdsActionRecord> result = service.getPendingCdsActions();
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(5, result.size());
+		verify(dao, times(1)).getPendingCdsActions();
+	}
+
+	@Test
+	public void testGetPendingCdsActions_EmptyResult() {
+		// Arrange
+		when(dao.getPendingCdsActions()).thenReturn(new ArrayList<>());
+
+		// Act
+		List<CdsActionRecord> result = service.getPendingCdsActions();
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testGetPendingCdsActions_NullResult() {
+		// Arrange
+		when(dao.getPendingCdsActions()).thenReturn(null);
+
+		// Act
+		List<CdsActionRecord> result = service.getPendingCdsActions();
+
+		// Assert
+		assertNull(result);
+	}
+
+	@Test
+	public void testGetPendingCdsActions_DAOThrowsException() {
+		// Arrange
+		when(dao.getPendingCdsActions()).thenThrow(new RuntimeException("Database error"));
+
+		// Act & Assert (JUnit 4 style)
+		try {
+			service.getPendingCdsActions();
+			fail("Expected RuntimeException to be thrown");
+		} catch (RuntimeException ex) {
+			// expected
+		}
+	}
+
+	@Test
+	public void testMultipleConsecutiveQueries() {
+		// Arrange
+		List<Integer> ids = createIntegerList(8);
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(ids);
+
+		// Act
+		List<Integer> result1 = service.getIITPatientIds(90);
+		List<Integer> result2 = service.getIITPatientIds(90);
+
+		// Assert
+		assertNotNull(result1);
+		assertNotNull(result2);
+		assertEquals(result1.size(), result2.size());
+		verify(dao, times(2)).getIITPatientIds(any(Date.class), any(Date.class));
+	}
+
+	@Test
+	public void testDifferentLookbackPeriods() {
+		// Arrange
+		// Since DAO takes dates, return different results on consecutive invocations
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class)))
+				.thenReturn(createIntegerList(5))
+				.thenReturn(createIntegerList(10))
+				.thenReturn(createIntegerList(15));
+
+		// Act
+		List<Integer> result30 = service.getIITPatientIds(30);
+		List<Integer> result60 = service.getIITPatientIds(60);
+		List<Integer> result90 = service.getIITPatientIds(90);
+
+		// Assert
+		assertEquals(5, result30.size());
+		assertEquals(10, result60.size());
+		assertEquals(15, result90.size());
+	}
+
+	@Test
+	public void testLargeDataSets() {
+		// Arrange
+		List<Integer> largeList = createIntegerList(10000);
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(largeList);
+
+		// Act
+		List<Integer> result = service.getIITPatientIds(90);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(10000, result.size());
+	}
+
+	@Test
+	public void testNegativeLookbackPeriod() {
+		// Arrange
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(new ArrayList<>());
+
+		// Act
+		List<Integer> result = service.getIITPatientIds(-1);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testZeroLookbackPeriod() {
+		// Arrange
+		when(dao.getIITPatientIds(any(Date.class), any(Date.class))).thenReturn(new ArrayList<>());
+
+		// Act
+		List<Integer> result = service.getIITPatientIds(0);
+
+		// Assert
+		assertNotNull(result);
+		assertEquals(0, result.size());
+	}
+
+	// Helper methods
+	private List<Integer> createIntegerList(int count) {
+		List<Integer> list = new ArrayList<>();
+		for (int i = 1; i <= count; i++) {
+			list.add(i);
+		}
+		return list;
+	}
+
+	private List<CdsActionRecord> createActionList(int count) {
+		List<CdsActionRecord> list = new ArrayList<>();
+		for (int i = 0; i < count; i++) {
+			list.add(new CdsActionRecord());
+		}
+		return list;
+	}
+}
+
