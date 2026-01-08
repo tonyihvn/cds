@@ -162,7 +162,7 @@ if (!binding.hasVariable('stats') || stats == null) {
 
 <div class="container">
     <div class="page-header">
-        <h1>Clinical Data System Dashboard</h1>
+        <h1>DATA INTEGRITY Dashboard</h1>
 
     </div>
 

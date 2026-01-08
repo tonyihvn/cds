@@ -262,9 +262,9 @@ public class ClinicalDataSystemDao {
 	}
 	
 	public void updateCdsActionStatus(Integer actionId, String status) {
-		System.out.println("[CDS DAO] updateCdsActionStatus() called");
-		System.out.println("[CDS DAO] Parameter - actionId: " + actionId);
-		System.out.println("[CDS DAO] Parameter - status: " + status);
+		log.info("[CDS DAO] updateCdsActionStatus() called");
+		log.info("[CDS DAO] Parameter - actionId: " + actionId);
+		log.info("[CDS DAO] Parameter - status: " + status);
 		try {
 			String sql = "update cds_actions_table set status = :status where action_id = :id";
 			log.debug("[CDS DAO] Executing SQL: " + sql);
@@ -272,9 +272,85 @@ public class ClinicalDataSystemDao {
 			q.setString("status", status);
 			q.setInteger("id", actionId);
 			int result = q.executeUpdate();
-			System.out.println("[CDS DAO] updateCdsActionStatus() - Query executed successfully, Rows affected: " + result);
+			log.info("[CDS DAO] updateCdsActionStatus() - Query executed successfully, Rows affected: " + result);
 		} catch (Exception e) {
 			log.error("[CDS DAO] updateCdsActionStatus() - ERROR: " + e.getMessage(), e);
+			throw e;
+		}
+	}
+
+	/**
+	 * Get all pending actions for a specific patient
+	 */
+	@SuppressWarnings("unchecked")
+	public List<CdsActionRecord> getPendingActionsByPatient(Integer patientId) {
+		log.info("[CDS DAO] getPendingActionsByPatient() called");
+		log.info("[CDS DAO] Parameter - patientId: " + patientId);
+		try {
+			String sql = "select action_id, patient_id, encounter_id, call_report, next_step_action, assigned_to_user_id, status, date_created "
+			        + "from cds_actions_table where patient_id = :pid and status = 'PENDING' order by date_created desc";
+			log.debug("[CDS DAO] Executing SQL: " + sql);
+			SQLQuery q = getSession().createSQLQuery(sql);
+			q.setInteger("pid", patientId);
+			List<?> rows = q.list();
+			log.info("[CDS DAO] getPendingActionsByPatient() - Query returned " + rows.size() + " rows");
+
+			List<CdsActionRecord> result = new ArrayList<CdsActionRecord>();
+			for (Object row : rows) {
+				Object[] cols = (Object[]) row;
+				CdsActionRecord a = new CdsActionRecord();
+				a.setActionId(cols[0] != null ? ((Number) cols[0]).intValue() : null);
+				a.setPatientId(cols[1] != null ? ((Number) cols[1]).intValue() : null);
+				a.setEncounterId(cols[2] != null ? ((Number) cols[2]).intValue() : null);
+				a.setCallReport(cols[3] != null ? cols[3].toString() : null);
+				a.setNextStepAction(cols[4] != null ? cols[4].toString() : null);
+				a.setAssignedToUserId(cols[5] != null ? ((Number) cols[5]).intValue() : null);
+				a.setStatus(cols[6] != null ? cols[6].toString() : null);
+				a.setDateCreated((Date) cols[7]);
+				result.add(a);
+			}
+			log.info("[CDS DAO] getPendingActionsByPatient() - Parsed " + result.size() + " pending action records");
+			return result;
+		} catch (Exception e) {
+			log.error("[CDS DAO] getPendingActionsByPatient() - ERROR: " + e.getMessage(), e);
+			throw e;
+		}
+	}
+
+	/**
+	 * Get all actions (pending and completed) for a specific patient
+	 */
+	@SuppressWarnings("unchecked")
+	public List<CdsActionRecord> getAllActionsByPatient(Integer patientId) {
+		log.info("[CDS DAO] getAllActionsByPatient() called");
+		log.info("[CDS DAO] Parameter - patientId: " + patientId);
+		try {
+			String sql = "select action_id, patient_id, encounter_id, call_report, next_step_action, assigned_to_user_id, status, date_created "
+			        + "from cds_actions_table where patient_id = :pid order by date_created desc";
+			log.debug("[CDS DAO] Executing SQL: " + sql);
+			SQLQuery q = getSession().createSQLQuery(sql);
+			q.setInteger("pid", patientId);
+			List<?> rows = q.list();
+			log.info("[CDS DAO] getAllActionsByPatient() - Query returned " + rows.size() + " rows");
+
+			List<CdsActionRecord> result = new ArrayList<CdsActionRecord>();
+			for (Object row : rows) {
+				Object[] cols = (Object[]) row;
+				CdsActionRecord a = new CdsActionRecord();
+				a.setActionId(cols[0] != null ? ((Number) cols[0]).intValue() : null);
+				a.setPatientId(cols[1] != null ? ((Number) cols[1]).intValue() : null);
+				a.setEncounterId(cols[2] != null ? ((Number) cols[2]).intValue() : null);
+				a.setCallReport(cols[3] != null ? cols[3].toString() : null);
+				a.setNextStepAction(cols[4] != null ? cols[4].toString() : null);
+				a.setAssignedToUserId(cols[5] != null ? ((Number) cols[5]).intValue() : null);
+				a.setStatus(cols[6] != null ? cols[6].toString() : null);
+				a.setDateCreated((Date) cols[7]);
+				result.add(a);
+			}
+			log.info("[CDS DAO] getAllActionsByPatient() - Parsed " + result.size() + " action records");
+			return result;
+		} catch (Exception e) {
+			log.error("[CDS DAO] getAllActionsByPatient() - ERROR: " + e.getMessage(), e);
 			throw e;
 		}
 	}

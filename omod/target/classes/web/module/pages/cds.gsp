@@ -1,2 +1,2 @@
-<% ui.decorateWith("appui", "standardEmrPage", [title: "Clinical Data System Dashboard"]) %>
+<% ui.decorateWith("appui", "standardEmrPage", [title: "DATA INTEGRITY MODULE"]) %>
 ${ ui.includeFragment("cds", "cds") }

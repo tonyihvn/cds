@@ -1,0 +1,17 @@
+[
+    {
+        "id": "${project.parent.artifactId}.cds",
+        "description": "Data Integrity v2",
+        "order": 24,
+        "extensions": [
+            {
+                "id": "cds.homepageLink",
+                "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+                "type": "link",
+                "label": "Data Integrity v2",
+                "url": "cds/cds.page",
+                "icon": "icon-lightbulb"
+            }
+        ]
+    }
+]
