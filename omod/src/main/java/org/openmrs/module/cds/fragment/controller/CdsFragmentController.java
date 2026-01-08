@@ -35,11 +35,11 @@ public class CdsFragmentController {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
-	private static final int DEFAULT_UPCOMING_DAYS = 30;
+	private static final int DEFAULT_UPCOMING_DAYS = 300;
 	
-	private static final int DEFAULT_MISSED_DAYS = 27;
+	private static final int DEFAULT_MISSED_DAYS = 277;
 	
-	private static final int DEFAULT_IIT_LOOKBACK_DAYS = 27;
+	private static final int DEFAULT_IIT_LOOKBACK_DAYS = 277;
 	
 	/**
 	 * Main dashboard fragment providing statistics and patient lists
@@ -58,11 +58,13 @@ public class CdsFragmentController {
 
 		// Create statistics DTO
 		Map<String, Object> stats = new HashMap<>();
+
 		stats.put("upcomingCount", upcomingPatientIds.size());
 		stats.put("missedCount", missedPatientIds.size());
 		stats.put("iitCount", iitPatientIds.size());
 		stats.put("pendingActionsCount", pendingActions.size());
 		stats.put("totalActivePatients", upcomingPatientIds.size() + missedPatientIds.size() + iitPatientIds.size());
+        System.out.println("Printing Fetched Stats: "+stats);
 
 		model.addAttribute("stats", stats);
 		model.addAttribute("upcomingPatientIds", upcomingPatientIds);

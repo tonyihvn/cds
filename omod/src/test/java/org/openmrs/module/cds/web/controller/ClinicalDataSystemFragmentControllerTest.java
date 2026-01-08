@@ -43,6 +43,9 @@ public class ClinicalDataSystemFragmentControllerTest {
 		mockStats.setMissedCount(15);
 		mockStats.setUpcomingCount(22);
 		mockStats.setPendingActionsCount(5);
+
+		// Inject the mock service into the controller
+		controller.cdsService = cdsService;
 	}
 
 	@Test
@@ -69,6 +72,7 @@ public class ClinicalDataSystemFragmentControllerTest {
 	public void testGetDashboardStats_ServiceNull_ReturnsMockData() {
 		// Arrange
 		// Service is null (not initialized)
+		controller.cdsService = null;
 
 		// Act
 		DashboardStats result = controller.getDashboardStats();

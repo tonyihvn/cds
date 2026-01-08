@@ -1,5 +1,3 @@
-<% ui.decorateWith("appui", "standardEmrPage", [title: "Clinical Data System Dashboard"]) %>
-
 <% /*
    Ensure a safe default for `stats` to avoid MissingPropertyException when the
    page is rendered without a provided model attribute. This can happen if the
@@ -7,162 +5,165 @@
 */
 if (!binding.hasVariable('stats') || stats == null) {
     stats = [
-        iitCount: 12,
-        missedCount: 20,
-        upcomingCount: 7,
-        pendingActionsCount: 6
+            iitCount: 12,
+            missedCount: 20,
+            upcomingCount: 7,
+            pendingActionsCount: 6
     ]
 }
 %>
 
+
+
 <style>
-    .dashboard-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-    .stat-box {
-        padding: 20px;
-        border-radius: 5px;
-        color: white;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+.stat-box {
+    padding: 20px;
+    border-radius: 5px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
-    .stat-box h3 {
-        margin: 0;
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-        opacity: 0.9;
-    }
+.stat-box h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.9;
+}
 
-    .stat-box .number {
-        font-size: 32px;
-        font-weight: bold;
-    }
+.stat-box .number {
+    font-size: 32px;
+    font-weight: bold;
+}
 
-    .stat-box.iit {
-        background-color: #dc3545;
-    }
+.stat-box.iit {
+    background-color: #dc3545;
+}
 
-    .stat-box.missed {
-        background-color: #ffc107;
-        color: #333;
-    }
+.stat-box.missed {
+    background-color: #ffc107;
+    color: #333;
+}
 
-    .stat-box.upcoming {
-        background-color: #28a745;
-    }
+.stat-box.upcoming {
+    background-color: #28a745;
+}
 
-    .stat-box.actions {
-        background-color: #007bff;
-    }
+.stat-box.actions {
+    background-color: #007bff;
+}
 
-    .tabs-container {
-        margin-top: 30px;
-    }
+.tabs-container {
+    margin-top: 30px;
+}
 
-    .nav-tabs {
-        border-bottom: 2px solid #ddd;
-        margin-bottom: 20px;
-    }
+.nav-tabs {
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+}
 
-    .nav-tabs .nav-link {
-        color: #666;
-        border: none;
-        border-bottom: 3px solid transparent;
-        padding: 10px 20px;
-        cursor: pointer;
-    }
+.nav-tabs .nav-link {
+    color: #666;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 20px;
+    cursor: pointer;
+}
 
-    .nav-tabs .nav-link.active {
-        color: #007bff;
-        border-bottom-color: #007bff;
-        background-color: transparent;
-    }
+.nav-tabs .nav-link.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+    background-color: transparent;
+}
 
-    .patient-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-    }
+.patient-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
 
-    .patient-table th {
-        background-color: #f5f5f5;
-        padding: 12px;
-        text-align: left;
-        font-weight: 600;
-        border-bottom: 2px solid #ddd;
-    }
+.patient-table th {
+    background-color: #f5f5f5;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+}
 
-    .patient-table td {
-        padding: 12px;
-        border-bottom: 1px solid #eee;
-    }
+.patient-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
 
-    .patient-table tr.danger {
-        background-color: #f8d7da;
-    }
+.patient-table tr.danger {
+    background-color: #f8d7da;
+}
 
-    .patient-table tr.warning {
-        background-color: #fff3cd;
-    }
+.patient-table tr.warning {
+    background-color: #fff3cd;
+}
 
-    .patient-table tr.success {
-        background-color: #d4edda;
-    }
+.patient-table tr.success {
+    background-color: #d4edda;
+}
 
-    .btn-group {
-        display: flex;
-        gap: 10px;
-    }
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
 
-    .btn {
-        padding: 8px 12px;
-        border-radius: 3px;
-        border: none;
-        cursor: pointer;
-        font-size: 12px;
-    }
+.btn {
+    padding: 8px 12px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+}
 
-    .btn-primary {
-        background-color: #007bff;
-        color: white;
-    }
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
+.btn-primary:hover {
+    background-color: #0056b3;
+}
 
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
 
-    .btn-secondary:hover {
-        background-color: #545b62;
-    }
+.btn-secondary:hover {
+    background-color: #545b62;
+}
 
-    .empty-state {
-        text-align: center;
-        padding: 40px 20px;
-        color: #666;
-    }
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
 
-    .empty-state i {
-        font-size: 48px;
-        margin-bottom: 20px;
-        opacity: 0.3;
-    }
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
 </style>
 
 <div class="container">
     <div class="page-header">
         <h1>Clinical Data System Dashboard</h1>
+
     </div>
 
     <!-- Statistics Boxes -->
