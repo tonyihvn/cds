@@ -1,15 +1,24 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+
+<!-- jQuery (if not already included) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+
 <%
-/*
-Patient Dashboard Fragment
-Displays comprehensive patient information including:
-- PEPFAR ID and patient names
-- Viral load status and next due date
-- Current regimen and line
-- Next appointment date
-- Encounter history
-- Pending actions
-- EAC referral button
-*/
+/**
+ * Patient Dashboard Fragment
+ * Displays comprehensive patient information
+ *
+ * All data is provided by PatientDashboardFragmentController
+ * No initialization code needed - just rendering
+ */
 %>
 
 <style>
@@ -211,11 +220,11 @@ Displays comprehensive patient information including:
             </div>
             <div class="info-card">
                 <div class="info-label">Age</div>
-                <div class="info-value">${patient.age} years</div>
+                <div class="info-value">${patient?.age ?: 'N/A'} years</div>
             </div>
             <div class="info-card">
                 <div class="info-label">Gender</div>
-                <div class="info-value">${patient.gender}</div>
+                <div class="info-value">${patient?.gender ?: 'N/A'}</div>
             </div>
         </div>
     </div>
@@ -295,26 +304,48 @@ Displays comprehensive patient information including:
     <div style="background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
         <h3>Recent Encounter History</h3>
         <% if (encounters && encounters.size() > 0) { %>
-            <table class="encounters-table">
+            <table id="encountersTable" class="encounters-table" style="width:100%">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Encounter Type</th>
-                        <th>Provider</th>
-                        <th>Location</th>
+                        <th>Date <input type="text" class="column-search" placeholder="Search date"></th>
+                        <th>Encounter Type <input type="text" class="column-search" placeholder="Search type"></th>
+                        <th>Provider <input type="text" class="column-search" placeholder="Search provider"></th>
+                        <th>Location <input type="text" class="column-search" placeholder="Search location"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <% encounters.each { encounter -> %>
                         <tr>
-                            <td><fmt:formatDate value="${encounter.encounterDatetime}" pattern="yyyy-MM-dd HH:mm"/></td>
-                            <td>${encounter.encounterType.name}</td>
-                            <td>${encounter.provider?.personName ?: 'N/A'}</td>
-                            <td>${encounter.location?.name ?: 'N/A'}</td>
+                            <td><fmt:formatDate value="${encounter?.encounterDatetime}" pattern="yyyy-MM-dd HH:mm"/></td>
+                            <td>${encounter?.encounterType?.name ?: 'N/A'}</td>
+                            <td>${encounter?.provider?.personName ?: 'N/A'}</td>
+                            <td>${encounter?.location?.name ?: 'N/A'}</td>
                         </tr>
                     <% } %>
                 </tbody>
             </table>
+
+            <script>
+            $(document).ready(function() {
+                var table = $('#encountersTable').DataTable({
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                    "pageLength": 10,
+                    "order": [[0, 'desc']]
+                });
+
+                // Add column search functionality
+                $('#encountersTable thead tr:nth-child(2) th').each(function(i) {
+                    var title = $('#encountersTable thead th').eq($(this).index()).text();
+                    $(this).html('<input type="text" class="column-search" placeholder="Search ' + title + '" />');
+                });
+
+                $('#encountersTable thead').on('keyup', '.column-search', function() {
+                    table.column($(this).parent().index() + ':visible')
+                        .search(this.value)
+                        .draw();
+                });
+            });
+            </script>
         <% } else { %>
             <p>No encounters found</p>
         <% } %>
@@ -350,13 +381,13 @@ Displays comprehensive patient information including:
     <% if (pendingActions && pendingActions.size() > 0) { %>
         <div style="background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
             <h3>Pending Actions</h3>
-            <table class="encounters-table">
+            <table id="pendingActionsTable" class="encounters-table" style="width:100%">
                 <thead>
                     <tr>
-                        <th>Action</th>
-                        <th>Assigned To</th>
-                        <th>Status</th>
-                        <th>Date Created</th>
+                        <th>Action <input type="text" class="column-search" placeholder="Search action" style="width:100%"></th>
+                        <th>Assigned To <input type="text" class="column-search" placeholder="Search user" style="width:100%"></th>
+                        <th>Status <input type="text" class="column-search" placeholder="Search status" style="width:100%"></th>
+                        <th>Date <input type="text" class="column-search" placeholder="Search date" style="width:100%"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -370,6 +401,24 @@ Displays comprehensive patient information including:
                     <% } %>
                 </tbody>
             </table>
+
+            <script>
+            $(document).ready(function() {
+                if ($('#pendingActionsTable').length) {
+                    var table = $('#pendingActionsTable').DataTable({
+                        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                        "pageLength": 10
+                    });
+
+                    // Add column search functionality
+                    $('#pendingActionsTable thead').on('keyup', '.column-search', function() {
+                        table.column($(this).parent().index())
+                            .search(this.value)
+                            .draw();
+                    });
+                }
+            });
+            </script>
         </div>
     <% } %>
 </div>
@@ -432,6 +481,15 @@ Displays comprehensive patient information including:
 </div>
 
 <script>
+// Store patient ID and UUID for JavaScript functions
+var currentPatientId = ${patientId ?: 0};
+var currentPatientUuid = '${patientUuid ?: ''}';
+var eacFormUrl = '${eacFormUrl ?: ''}';
+
+console.log('[CDS PatientDashboard] Patient ID in script: ' + currentPatientId);
+console.log('[CDS PatientDashboard] Patient UUID in script: ' + currentPatientUuid);
+console.log('[CDS PatientDashboard] EAC Form URL: ' + eacFormUrl);
+
 // Modal functions
 function openActionModal() {
     document.getElementById('actionModal').style.display = 'block';
@@ -450,15 +508,40 @@ function closeAPIModal() {
 }
 
 function openEACForm() {
-    // Navigate to EAC form
-    // Assuming form ID 69 - adjust URL as needed
-    window.location.href = '${ ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: patient.patientId, formId: 69]) }';
+    // Navigate to EAC form using the URL constructed in the controller
+    if (eacFormUrl && eacFormUrl.length > 0) {
+        console.log('[CDS PatientDashboard] Navigating to EAC form: ' + eacFormUrl);
+        window.location.href = eacFormUrl;
+    } else {
+        alert('EAC Form URL is not available. Patient UUID may be missing.');
+    }
+}
+
+function closeActionModal() {
+    document.getElementById('actionModal').style.display = 'none';
+}
+
+function openAPIModal() {
+    document.getElementById('apiModal').style.display = 'block';
+}
+
+function closeAPIModal() {
+    document.getElementById('apiModal').style.display = 'none';
+}
+
+function openEACForm() {
+    // Navigate to EAC form using the stored patient ID
+    if (currentPatientId && currentPatientId > 0) {
+        window.location.href = '${ui.pageLink("coreapps", "clinicianfacing/patient", [patientId: "PLACEHOLDER", formId: 69])}'.replace('PLACEHOLDER', currentPatientId);
+    } else {
+        alert('Patient ID is not available');
+    }
 }
 
 function saveAction(event) {
     event.preventDefault();
     const actionData = {
-        patientId: ${patient.patientId},
+        patientId: currentPatientId,
         nextStepAction: document.getElementById('nextStep').value,
         assignedToUserId: document.getElementById('assignedToUser').value,
         callReport: document.getElementById('actionDescription').value,
@@ -489,7 +572,7 @@ function saveAction(event) {
 function sendToAPI(event) {
     event.preventDefault();
     const reportData = {
-        patientId: ${patient.patientId},
+        patientId: currentPatientId,
         pepfarId: '${pepfarId}',
         patientName: '${givenName} ${familyName}',
         viralLoad: '${viralLoadData.currentViralLoad}',

@@ -208,9 +208,13 @@ public class DashboardStatsDTOTest {
 		DashboardStats stats1 = new DashboardStats(Integer.MAX_VALUE, 0, 0, 0);
 		DashboardStats stats2 = new DashboardStats(1, 0, 0, 0);
 
-		// Act & Assert
-		// Note: Integer overflow is expected in Java
-		assertNotEquals(stats1.getIitCount() + stats2.getIitCount(), Integer.MAX_VALUE + 1);
+		// Act
+		int result = stats1.getIitCount() + stats2.getIitCount();
+
+		// Assert
+		// Note: Integer overflow is expected in Java. MAX_VALUE + 1 wraps around to MIN_VALUE
+		assertEquals(Integer.MIN_VALUE, result);
+		assertEquals(-2147483648, result);
 	}
 
 	@Test

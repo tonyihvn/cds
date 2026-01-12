@@ -118,10 +118,9 @@
                         def concept5096 = org.openmrs.api.context.Context.getConceptService().getConcept(5096)
                         def appointmentObs = obsService.getObservationsByPersonAndConcept(patient, concept5096)
                         if (appointmentObs && !appointmentObs.isEmpty()) {
-                            for (Obs obs : appointmentObs) {
-                                if (obs.getValueDatetime() != null && obs.getValueDatetime().after(new Date())) {
+                            appointmentObs.each { obs ->
+                                if (appointmentDate == 'N/A' && obs.getValueDatetime() != null && obs.getValueDatetime().after(new Date())) {
                                     appointmentDate = obs.getValueDatetime().format('yyyy-MM-dd')
-                                    break
                                 }
                             }
                         }

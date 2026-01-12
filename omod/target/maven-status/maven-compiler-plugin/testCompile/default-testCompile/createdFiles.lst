@@ -1,5 +1,2 @@
-org\openmrs\module\cds\web\controller\ErrorHandlingTest.class
 org\openmrs\module\cds\AdminListExtensionTest.class
 org\openmrs\module\cds\fragment\controller\CdsFragmentControllerTest.class
-org\openmrs\module\cds\web\controller\ClinicalDataSystemFragmentControllerTest.class
-org\openmrs\module\cds\web\controller\ClinicalDataSystemControllerIntegrationTest.class
