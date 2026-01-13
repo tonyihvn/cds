@@ -168,7 +168,7 @@
 function viewPatientDashboard(patientId) {
     console.log('[CDS Upcoming List] Viewing CDS dashboard for patient:', patientId);
     // Navigate to patient dashboard
-    window.location.href = '${ui.pageLink("cds", "patientDashboard", ["patientId": "PATIENT_ID"])}'
+    window.location.href = '${ui.pageLink("cds", "cdsdashboard", ["patientId": "PATIENT_ID"])}'
                           .replace('PATIENT_ID', patientId);
 }
 </script>

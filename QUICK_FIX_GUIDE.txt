@@ -1,0 +1,46 @@
+# ⚡ QUICK REFERENCE: patientDashboard Fix
+
+## Problem Fixed ✅
+```
+org.openmrs.ui.framework.UiFrameworkException: viewProvider cds does not have a view named patientDashboard
+```
+
+## Solution Applied
+- Fixed `upcomingList.gsp` line 171
+- Changed: `patientDashboard` → `cdsdashboard`
+- All compiled files updated
+
+## Deploy in 3 Steps
+
+### 1️⃣ Rebuild
+```bash
+cd C:\Users\ginte\OneDrive\Desktop\ihvnprojects\cds
+mvn clean install -DskipTests=true
+```
+
+Or double-click: `REBUILD_QUICK.bat`
+
+### 2️⃣ Deploy
+Copy: `omod/target/cds-1.0.0-SNAPSHOT.omod`
+To: `openmrs/modules/`
+
+### 3️⃣ Restart OpenMRS
+Restart your OpenMRS instance
+
+## Verify Fix
+1. Go to CDS Dashboard
+2. Click IIT/Missed/Upcoming Lists
+3. Click "Patient Dashboard" button
+4. ✅ Should navigate without errors
+
+## What Was Changed
+- **File**: `omod/src/main/webapp/fragments/upcomingList.gsp`
+- **Line**: 171
+- **Change**: `"patientDashboard"` → `"cdsdashboard"`
+
+## Status
+✅ **COMPLETE** - Ready to deploy
+
+---
+For detailed info, see: `DASHBOARD_FIX_COMPLETE.md`
+

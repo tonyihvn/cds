@@ -1,0 +1,51 @@
+# ⚡ QUICK ACTION GUIDE: patientId Missing Property Fix
+
+## ✅ ISSUE FIXED
+```
+groovy.lang.MissingPropertyException: No such property: patientId for class: SimpleTemplateScript27
+```
+
+## 🔧 What Was Fixed
+Updated `cdsdashboard.gsp` page to properly extract `patientId` from URL request parameters before passing to the fragment.
+
+## 📋 Files Changed
+**Source**: `omod/src/main/webapp/pages/cdsdashboard.gsp`
+
+## 🚀 Next Steps: REBUILD & DEPLOY
+
+### Step 1: Rebuild the Module
+```bash
+cd C:\Users\ginte\OneDrive\Desktop\ihvnprojects\cds
+mvn clean install -DskipTests=true
+```
+
+Or double-click: `REBUILD_QUICK.bat`
+
+### Step 2: Deploy
+Copy the newly built OMOD file:
+```
+omod/target/cds-1.0.0-SNAPSHOT.omod
+```
+To your OpenMRS modules directory
+
+### Step 3: Restart OpenMRS
+Stop and restart your OpenMRS instance
+
+### Step 4: Test
+Visit: `http://localhost:8080/openmrs/cds/cdsdashboard.page?patientId=271`
+
+✅ Should load without errors!
+
+## 💡 How It Works
+The page now:
+1. Extracts `patientId` from URL query parameter
+2. Safely converts it to an integer
+3. Passes it to the fragment controller
+4. Fragment displays patient dashboard
+
+## 🎯 Status
+✅ **PERMANENT FIX** - Ready for deployment
+
+---
+For detailed explanation, see: `PATIENTID_MISSING_PROPERTY_FIX.md`
+

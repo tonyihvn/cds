@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
+
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
- 
+
     <!--
     	See http://wiki.openmrs.org/display/docs/Module+liquibase+File for 
     	documentation on this file.
@@ -45,8 +45,11 @@
         </preConditions>
 
         <comment>
-            Creates cds_actions_table to store internal task management and HQ reporting items.
+            Creates cds_actions_table to store documented actions and task management items.
+            Unified table stores both documented actions and tracking efforts with discriminator column.
         </comment>
+
+
 
         <createTable tableName="cds_actions_table">
             <column name="action_id" type="int" autoIncrement="true">
@@ -55,14 +58,47 @@
             <column name="patient_id" type="int">
                 <constraints nullable="false"/>
             </column>
+            <column name="action_type" type="varchar(50)" remarks="DOCUMENTED_ACTION or TRACKING_EFFORT"/>
             <column name="encounter_id" type="int"/>
-            <column name="call_report" type="clob"/>
+            <!-- Documented Action Fields -->
+            <column name="call_report" type="clob" remarks="Action description"/>
             <column name="next_step_action" type="varchar(255)"/>
             <column name="assigned_to_user_id" type="int"/>
-            <column name="status" type="varchar(50)" defaultValue="PENDING"/>
+            <column name="assigned_to_user_name" type="varchar(255)"/>
+            <!-- Tracking Effort Fields -->
+            <column name="verification_type" type="varchar(100)" remarks="Type of verification: Client Verification, Records Verification, LTFU, etc."/>
+            <column name="contact_method" type="varchar(100)" remarks="Contact method: Phone Call, Home Visit, CHW, etc."/>
+            <column name="attempted_contact_date" type="date"/>
+            <column name="tracking_outcome" type="clob" remarks="Outcome of tracking effort"/>
+            <!-- Common Fields -->
+            <column name="status" type="varchar(50)" defaultValue="PENDING" remarks="Status: PENDING, COMPLETED, ONGOING, DISCONTINUED, etc."/>
+            <column name="notes" type="clob"/>
+            <column name="created_by_user_id" type="int"/>
+            <column name="created_by_user_name" type="varchar(255)"/>
             <column name="date_created" type="datetime"/>
+            <column name="date_modified" type="datetime"/>
+            <column name="is_voided" type="tinyint" defaultValue="0" remarks="0=active, 1=deleted"/>
         </createTable>
 
+        <!-- Add indexes for better query performance -->
+        <createIndex tableName="cds_actions_table" indexName="idx_cds_actions_patient_id">
+            <column name="patient_id"/>
+        </createIndex>
+        <createIndex tableName="cds_actions_table" indexName="idx_cds_actions_type">
+            <column name="action_type"/>
+        </createIndex>
+        <createIndex tableName="cds_actions_table" indexName="idx_cds_actions_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="cds_actions_table" indexName="idx_cds_actions_date_created">
+            <column name="date_created"/>
+        </createIndex>
+        <createIndex tableName="cds_actions_table" indexName="idx_cds_actions_patient_type">
+            <column name="patient_id"/>
+            <column name="action_type"/>
+        </createIndex>
+
+        <!-- Add foreign key constraints -->
         <addForeignKeyConstraint constraintName="cds_actions_patient_fk"
                                   baseTableName="cds_actions_table" baseColumnNames="patient_id"
                                   referencedTableName="patient" referencedColumnNames="patient_id"/>
@@ -75,5 +111,65 @@
                                   baseTableName="cds_actions_table" baseColumnNames="encounter_id"
                                   referencedTableName="encounter" referencedColumnNames="encounter_id"/>
     </changeSet>
+
+    <!-- Create separate tracking efforts table (Optional - for large implementations) -->
+    <changeSet id="cds-2026-01-13-14-15-tracking-efforts" author="Tony">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="cds_tracking_efforts"/>
+            </not>
+        </preConditions>
+
+        <comment>
+            Creates cds_tracking_efforts table to store client tracking and follow-up efforts.
+            This is optional and can be used instead of the unified table for better organization.
+        </comment>
+
+        <createTable tableName="cds_tracking_efforts">
+            <column name="tracking_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="patient_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verification_type" type="varchar(100)" remarks="Type: Client Verification, Records Verification, LTFU, Transferred Out, Terminated"/>
+            <column name="contact_method" type="varchar(100)" remarks="Method: Phone Call, Home Visit, Contact via CHW, Community Outreach, Records Review"/>
+            <column name="attempted_contact_date" type="date"/>
+            <column name="status" type="varchar(50)" remarks="Status: Ongoing, Discontinued, Records Verified, Successfully Located, Unable to Locate"/>
+            <column name="outcome" type="clob" remarks="Outcome of tracking effort"/>
+            <column name="notes" type="clob"/>
+            <column name="created_by_user_id" type="int"/>
+            <column name="created_by_user_name" type="varchar(255)"/>
+            <column name="date_created" type="datetime"/>
+            <column name="date_modified" type="datetime"/>
+            <column name="is_voided" type="tinyint" defaultValue="0" remarks="0=active, 1=deleted"/>
+        </createTable>
+
+        <!-- Add indexes -->
+        <createIndex tableName="cds_tracking_efforts" indexName="idx_cds_tracking_patient_id">
+            <column name="patient_id"/>
+        </createIndex>
+        <createIndex tableName="cds_tracking_efforts" indexName="idx_cds_tracking_verification_type">
+            <column name="verification_type"/>
+        </createIndex>
+        <createIndex tableName="cds_tracking_efforts" indexName="idx_cds_tracking_status">
+            <column name="status"/>
+        </createIndex>
+        <createIndex tableName="cds_tracking_efforts" indexName="idx_cds_tracking_contact_method">
+            <column name="contact_method"/>
+        </createIndex>
+        <createIndex tableName="cds_tracking_efforts" indexName="idx_cds_tracking_date_created">
+            <column name="date_created"/>
+        </createIndex>
+        <createIndex tableName="cds_tracking_efforts" indexName="idx_cds_tracking_attempted_date">
+            <column name="attempted_contact_date"/>
+        </createIndex>
+
+        <!-- Add foreign key constraint -->
+        <addForeignKeyConstraint constraintName="cds_tracking_patient_fk"
+                                  baseTableName="cds_tracking_efforts" baseColumnNames="patient_id"
+                                  referencedTableName="patient" referencedColumnNames="patient_id"/>
+    </changeSet>
+
 
 </databaseChangeLog>

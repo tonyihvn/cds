@@ -163,7 +163,7 @@
                                     📊 Dashboard
                                 </button>
                                 <% if (!hasEAC) { %>
-                                    <button class="btn btn-danger" onclick="openEACForm(${patient.patientId})" title="Open Enhanced Adherence Counselling form">
+                                    <button class="btn btn-danger" onclick="openEACForm('${patient.uuid}')" title="Open Enhanced Adherence Counselling form">
                                         📋 EAC Form
                                     </button>
                                 <% } else { %>
@@ -190,15 +190,16 @@
 function viewPatientDashboard(patientId) {
     console.log('[CDS Missed List] Viewing CDS dashboard for patient:', patientId);
     // Navigate to patient dashboard
-    window.location.href = '${ui.pageLink("cds", "patientDashboard", ["patientId": "PATIENT_ID"])}'
+    window.location.href = '${ui.pageLink("cds", "cdsdashboard", ["patientId": "PATIENT_ID"])}'
                           .replace('PATIENT_ID', patientId);
 }
 
-function openEACForm(patientId) {
-    console.log('[CDS Missed List] Opening EAC form for patient:', patientId);
-    // Open EAC form (form ID 69)
-    window.location.href = '${ui.pageLink("coreapps", "clinicianfacing/patient", ["patientId": "PATIENT_ID", "formId": "69"])}'
-                          .replace('PATIENT_ID', patientId);
+function openEACForm(patientUuid) {
+    console.log('[CDS Missed List] Opening EAC form for patient:', patientUuid);
+    // Open EAC form with UUID-based URL
+    var formUuid = 'd42c5cf6-8722-4f32-8767-ec8df0a40094'; // EAC form UUID
+    var returnUrl = encodeURIComponent('http://localhost:8080/openmrs/coreapps/clinicianfacing/patient.page?patientId=' + patientUuid);
+    window.location.href = 'http://localhost:8080/openmrs/htmlformentryui/htmlform/enterHtmlFormWithStandardUi.page?patientId=' + patientUuid + '&visitId=0&formUuid=' + formUuid + '&returnUrl=' + returnUrl;
 }
 
 function assignAction(patientId) {

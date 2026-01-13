@@ -1,0 +1,17 @@
+[
+    {
+        "id": "cds.cds",
+        "description": "Clinical Decision Support",
+        "order": 24,
+        "extensions": [
+            {
+                "id": "cds.homepageLink",
+                "extensionPointId": "org.openmrs.referenceapplication.homepageLink",
+                "type": "link",
+                "label": "Clinical Decision Support",
+                "url": "cds/cds.page",
+                "icon": "icon-lightbulb"
+            }
+        ]
+    }
+]

@@ -3,7 +3,7 @@
 <module configVersion="1.2">
 	
 	<!-- Base Module Properties -->
-	<id>${project.parent.artifactId}</id>
+	<id>cds</id>
 	<name>${project.parent.name}</name>
 	<version>${project.parent.version}</version>
 	<package>org.openmrs.module.cds</package>
